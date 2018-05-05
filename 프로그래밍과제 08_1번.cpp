@@ -29,7 +29,7 @@ typedef struct node {
 Node *htable[NHASH];
 char inputString[MAX];
 unsigned int Hash(const char *key1, const char *key2);
-void ReadFile();
+bool ReadFile(string title);
 Prefix* MakePrefix(char *key1, char *key2);
 Suffix* MakeSuffix(char *suffix);
 Node*& MakeNode(Prefix *p);
@@ -42,11 +42,16 @@ Prefix* FindPrefix(const char *key1, const char *key2);
 int main()
 {
 	srand((unsigned)time(NULL));
-	cout << "harry.txt를 읽는중..." << endl;
-	ReadFile();
+	string textName;
+	cout << "Input text to read: ";
+	cin >> textName;
+	cout << textName <<".txt를 읽는중..." << endl;
+	if (!ReadFile(textName))
+		return 0;
 #ifdef DEBUG
 	PrintHashTable();
 #endif // DEBUG
+	cout << "Markov Chain >>" << endl << endl;
 	PrintFakeText();
 
 	return 0;
@@ -62,12 +67,17 @@ unsigned int Hash(const char *key1, const char *key2) {
 		h = MULTIPLIER * h + *p;
 	return h % NHASH;
 }
-void ReadFile()
+bool ReadFile(string title)
 {
+	
 	char *token = NULL, *key1 = NULL, *key2 = NULL, *suffix = NULL;
 	string K1, K2;
 	fstream fin;
-	fin.open("harry.txt");
+	fin.open(title + ".txt");
+	if (fin.fail()) {
+		cout << title << ".txt is not exist." << endl;
+		return false;
+	}
 	fin.getline(inputString, MAX);
 	token = strtok(inputString, " ");
 	
@@ -173,7 +183,7 @@ void ReadFile()
 		}
 		token = strtok(NULL, " ");
 	}
-
+	return true;
 }
 Prefix* MakePrefix(char *key1, char *key2)
 {
